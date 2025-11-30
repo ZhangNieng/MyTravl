@@ -1,0 +1,131 @@
+name: Sync YunNan Travel Plan
+
+on:
+  push:
+    paths:
+      - 'YunNan.md'
+    branches: [ main, master ]
+  pull_request:
+    paths:
+      - 'YunNan.md'
+    branches: [ main, master ]
+
+jobs:
+  sync-to-issue:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Sync YunNan.md to GitHub Issue
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const path = require('path');
+            
+            try {
+              // 读取YunNan.md文件内容
+              const filePath = path.join(process.env.GITHUB_WORKSPACE, 'YunNan.md');
+              const content = fs.readFileSync(filePath, 'utf8');
+              
+              const issueTitle = '🗺️ 云南旅行计划 - 协同任务清单';
+              console.log('🔄 开始同步云南旅行计划...');
+              console.log(`📄 文件内容长度: ${content.length} 字符`);
+              
+              // 搜索已存在的旅行相关Issue
+              const { data: issues } = await github.rest.issues.listForRepo({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                state: 'all', // 搜索所有状态的issue
+                per_page: 50,
+                sort: 'updated',
+                direction: 'desc'
+              });
+              
+              console.log(`🔍 搜索到 ${issues.length} 个issues`);
+              
+              // 查找云南旅行相关的Issue
+              let travelIssue = null;
+              for (const issue of issues) {
+                if (!issue.pull_request && 
+                    (issue.title.includes('云南') || 
+                     issue.title.includes('旅行') || 
+                     issue.title.includes('大理') || 
+                     issue.title.includes('丽江'))) {
+                  travelIssue = issue;
+                  console.log(`✅ 找到相关Issue: #${issue.number} - "${issue.title}"`);
+                  break;
+                }
+              }
+              
+              if (travelIssue) {
+                // 检查Issue是否已关闭，如果是则重新打开
+                if (travelIssue.state === 'closed') {
+                  console.log(`🔓 重新打开已关闭的Issue #${travelIssue.number}`);
+                  await github.rest.issues.update({
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    issue_number: travelIssue.number,
+                    state: 'open'
+                  });
+                }
+                
+                // 更新已存在的Issue
+                console.log(`📝 更新Issue #${travelIssue.number}...`);
+                await github.rest.issues.update({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: travelIssue.number,
+                  title: issueTitle,
+                  body: content + `\n\n---\n*最后同步时间: ${new Date().toLocaleString('zh-CN')}*` +
+                        `\n*[查看源文件](https://github.com/${context.repo.owner}/${context.repo.repo}/blob/${context.sha}/YunNan.md)*`
+                });
+                console.log(`✅ 成功更新Issue #${travelIssue.number}`);
+                
+              } else {
+                // 创建新Issue
+                console.log('🆕 创建新的旅行计划Issue...');
+                const newIssue = await github.rest.issues.create({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  title: issueTitle,
+                  body: content + `\n\n---\n*自动创建于: ${new Date().toLocaleString('zh-CN')}*` +
+                        `\n*[查看源文件](https://github.com/${context.repo.owner}/${context.repo.repo}/blob/${context.sha}/YunNan.md)*`,
+                  labels: ['travel', 'yunnan', 'checklist', 'auto-sync']
+                });
+                console.log(`🎉 创建新Issue: #${newIssue.data.number}`);
+                console.log(`🔗 Issue链接: ${newIssue.data.html_url}`);
+              }
+              
+              console.log('✨ 同步完成！');
+              
+            } catch (error) {
+              console.error('❌ 同步失败:', error);
+              
+              // 更详细的错误信息
+              if (error.response) {
+                console.error('HTTP状态码:', error.response.status);
+                console.error('错误信息:', error.response.data);
+              }
+              
+              throw error;
+            }
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Send Success Notification
+        if: success()
+        run: |
+          echo "✅ YunNan.md 已成功同步到GitHub Issue"
+          echo "📝 下次修改YunNan.md文件时会自动更新Issue"
+
+      - name: Send Failure Notification
+        if: failure()
+        run: |
+          echo "❌ YunNan.md 同步到Issue失败"
+          echo "💡 请检查工作流运行日志获取详细信息"
