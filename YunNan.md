@@ -26,12 +26,19 @@
 ---
 
 
+![版本](https://img.shields.io/badge/版本-v1.0.0-blue)
+![构建](https://img.shields.io/badge/构建-通过-success)
+![测试](https://img.shields.io/badge/测试-失败-critical)
+![许可证](https://img.shields.io/badge/许可证-MIT-green)
+![问题](https://img.shields.io/badge/问题-修复中-orange)
+![文档](https://img.shields.io/badge/文档-完善中-yellow)
+
 ### 装备建议
-- [ ] **证件财物**：**<font color=red>身份证</font>**、银行卡、现金、信用卡、**<font color=red>驾驶证</font>**、机票
-- [ ] **电子设备**：手机、充电宝(2万毫安)、充电线、相机、**<font color=red>自拍杆</font>**
-- [ ] **衣物准备**：羽绒服、保暖内衣、围巾、帽子、手套、舒适登山鞋; **<font face="逐浪立楷" color=blue size> 防寒衣服 </font>**
-- [ ] **防护用品**：墨镜、润唇膏、保湿护肤品; **<font face="逐浪立楷" color=blue size>防晒霜、 氧气瓶 </font>**
-- [ ] **药品准备**：红景天(抗高反)、晕车药; **<font face="逐浪立楷" color=blue size>高反药物 </font>**
+- [ ] **证件财物**：![](https://img.shields.io/badge/必备-身份证-brightgreen) 、银行卡、现金、信用卡、![](https://img.shields.io/badge/必备-驾驶证-brightgreen)、机票
+- [ ] **电子设备**：手机、充电宝(2万毫安)、充电线、相机、![](https://img.shields.io/badge/必备-自拍杆-brightgreen)
+- [ ] **衣物准备**：羽绒服、保暖内衣、围巾、帽子、手套、舒适登山鞋; ![](https://img.shields.io/badge/必备-防寒衣物-brightgreen)
+- [ ] **防护用品**：墨镜、润唇膏、保湿护肤品; ![](https://img.shields.io/badge/必备-防晒霜+氧气-brightgreen)
+- [ ] **药品准备**：红景天(抗高反)、晕车药; ![](https://img.shields.io/badge/必备-高反药物-brightgreen)
 - [ ] **其他物品**：保温杯、纸巾、湿巾、颈枕、雨伞
 ---
 
